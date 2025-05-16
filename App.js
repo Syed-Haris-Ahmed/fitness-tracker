@@ -1,20 +1,55 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function App() {
+import FitnessDashboard from './components/screens/FitnessDashboard';
+import SettingsScreen from './components/screens/SettingsScreen';
+
+import { ThemeProvider, ThemeContext } from './ThemeContext';
+
+const Tab = createBottomTabNavigator();
+
+function AppTabs() {
+  const { darkMode } = useContext(ThemeContext);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: '#C7F90D',
+        tabBarInactiveTintColor: '#888',
+        tabBarStyle: {
+          backgroundColor: darkMode ? '#111' : '#fff',
+          borderTopColor: darkMode ? '#222' : '#ccc',
+          height: 70,
+          paddingBottom: 10,
+          paddingTop: 10,
+        },
+        tabBarIcon: ({ color }) => {
+          let iconName;
+
+          if (route.name === 'Exercise') iconName = 'barbell-outline';
+          else if (route.name === 'Food') iconName = 'restaurant-outline';
+          else if (route.name === 'Settings') iconName = 'settings-outline';
+
+          return <Icon name={iconName} size={24} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Exercise" component={FitnessDashboard} />
+      {/* <Tab.Screen name="Food" component={FoodSummaryScreen} /> */}
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <ThemeProvider>
+      <NavigationContainer>
+        <AppTabs />
+      </NavigationContainer>
+    </ThemeProvider>
+  );
+}
